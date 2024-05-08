@@ -77,7 +77,7 @@ function [is_ok,md5]=md5sum_shell(fn)
 
     cmd=sprintf('md5sum "%s"',fn);
     [is_ok,md5_with_fn]=run_unix(cmd);
-    if is_ok && ~isempty(md_5_with_fn) && ischar(md5_with_fn)
+    if is_ok && ~isempty(md5_with_fn) && ischar(md5_with_fn)
         parts=regexp(md5_with_fn,'\s+','split');
         md5=parts{1};
     else
