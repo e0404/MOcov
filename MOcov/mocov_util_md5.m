@@ -20,10 +20,11 @@ function md5=mocov_util_md5(filename)
 
 
 function md5=md5_from_file(fn)
-    md5_processors={@md5_builtin,...
-                    @hash_builtin,...
-                    @md5sum_shell,...
-                    @md5_shell};
+    md5_processors={@md5_builtin,...    % Octave <= 4.6
+                    @hash_builtin,...   % Octave >= 4.4
+                    @md5sum_shell,...   % Unix
+                    @md5_shell,...      % Unix
+                    @md5_java};         % Matlab Java
 
     n=numel(md5_processors);
     for k=1:n
@@ -76,9 +77,12 @@ function [is_ok,md5]=md5sum_shell(fn)
 
     cmd=sprintf('md5sum "%s"',fn);
     [is_ok,md5_with_fn]=run_unix(cmd);
-    parts=regexp(md5_with_fn,'\s+','split');
-    md5=parts{1};
-
+    if is_ok && ~isempty(md_5_with_fn) && ischar(md5_with_fn)
+        parts=regexp(md5_with_fn,'\s+','split');
+        md5=parts{1};
+    else
+        md5 = [];
+    end
 
 function [is_ok,md5]=md5_shell(fn)
 % supported on Unix platform
@@ -86,3 +90,24 @@ function [is_ok,md5]=md5_shell(fn)
     cmd=sprintf('md5 -q "%s"',fn);
     [is_ok,md5]=run_unix(cmd);
 
+function [is_ok,md5]=md5_java(fn)
+    % supported on Unix platform
+    if mocov_util_platform_is_octave()
+        is_ok = false;
+        md5 = [];
+    else
+        try 
+            j_msg_digest = java.security.MessageDigest.getInstance('MD5');
+            f_uint8 = uint8(fileread(fn));
+            if isempty(f_uint8)
+                md5 = 'd41d8cd98f00b204e9800998ecf8427e'; %empty stream md5
+            else
+                digest = dec2hex(j_msg_digest.digest(f_uint8));
+                md5 = lower(reshape(digest',1,[])); 
+            end
+            is_ok = true;
+        catch
+            is_ok = false;
+            md5 = [];
+        end
+    end
