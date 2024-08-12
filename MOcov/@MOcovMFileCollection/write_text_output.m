@@ -1,6 +1,6 @@
 function write_text_output(obj, output_fn)   
     monitor=obj.monitor;
-    if strcmp(output_fn,'cmdline')
+    if numel(output_fn) >= 7 && strcmp(output_fn(end-6:end),'cmdline')
         to_cmd = true;
         notify(monitor,'Writing result to command line');
     else 
