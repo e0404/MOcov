@@ -78,7 +78,7 @@ function write_text_output(obj, output_fn)
     out_str=sprintf('%s%s%s',out_str,get_table_whitespace(cover_str,col_lengths(4)),cover_str);
     
     if to_cmd
-        fprintf('%s\n\n',out_str);
+        fprintf('\n\n%s\n\n',out_str);
         msg='written to command line';
     else
         write_to_file(output_fn,out_str);
