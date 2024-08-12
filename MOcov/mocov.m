@@ -22,6 +22,9 @@ function varargout=mocov(varargin)
 %                               which match this pattern, even if they are
 %                               in covd. Can be used multiple times to
 %                               specify multiple patterns to match.
+%   '-cover_text_output', txt   (optional) Write coverage information to
+% `                             text file txt. If txt=='cmdline', output
+%                               will be written to command line instead.
 %   '-cover_json_file', cj      (optional) Store coverage information in
 % `                             file cj in JSON format [use with coveralls]
 %   '-cover_xml_file', xc       (optional) Store coverage information in
@@ -118,6 +121,8 @@ function coverage_writers=get_coverage_writers_collection()
     coverage_writers.cover_html_dir=@write_html_dir;
     coverage_writers.cover_xml_file=@write_xml_file;
     coverage_writers.cover_json_file=@write_json_file;
+    coverage_writers.cover_text_output=@write_text_output;
+
 
 function write_coverage_results(writers, mfile_collection, opt)
     keys=intersect(fieldnames(writers),fieldnames(opt));
@@ -188,6 +193,10 @@ function opt=parse_inputs(varargin)
                 case '-cover_json_file'
                     k=k+1;
                     opt.cover_json_file=varargin{k};
+
+                case '-cover_text_output'
+                    k=k+1;
+                    opt.cover_text_output=varargin{k};
 
                 case '-cover'
                     k=k+1;
